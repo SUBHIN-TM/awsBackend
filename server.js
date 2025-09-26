@@ -1,0 +1,46 @@
+require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
+const db = require("./db");
+
+const app = express();
+app.use(express.json());
+app.use(cors());
+
+// --- API ROUTES ---
+
+// Add new record
+app.post("/api/add", async (req, res) => {
+  const { name, phone } = req.body;
+  try {
+    await db.query("INSERT INTO users (name, phone) VALUES (?, ?)", [name, phone]);
+    res.json({ success: true, message: "User saved!" });
+  } catch (err) {
+    console.log("err",err);
+    
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Get all records
+app.get("/api/list", async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT * FROM users");
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// --- FRONTEND SERVING IN PRODUCTION ---
+if (process.env.MODE === "production") {
+  const buildPath = path.join(__dirname, "../frontend/dist");
+  app.use(express.static(buildPath));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(buildPath, "index.html"));
+  });
+}
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
