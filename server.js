@@ -8,6 +8,7 @@ const fs = require("fs");
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(express.static(path.resolve(__dirname, "../awsFrontend/dist"))); //react app
 
 // console.log("DB_USER =", process.env.DB_USER); console.log("DB_PASSWORD =", process.env.DB_PASSWORD);
 
@@ -39,26 +40,28 @@ app.get("/api/list", async (req, res) => {
 });
 
 
-if (process.env.MODE === "production") {
-  const buildPath = path.join(__dirname, "../awsFrontend/dist");
-  app.use(express.static(buildPath));
+// if (process.env.MODE === "production") {
+//   const buildPath = path.join(__dirname, "../awsFrontend/dist");
+//   app.use(express.static(buildPath));
 
-  // console.log("buildpath", buildPath);
+//   // console.log("buildpath", buildPath);
 
-  fs.readdir(buildPath, (err, files) => {
-    if (err) {
-      console.error("Error reading build folder:", err);
-    } else {
-      console.log("Files inside buildPath:");
-      // files.forEach(file => console.log(" -", file));
-    }
-  });
+//   fs.readdir(buildPath, (err, files) => {
+//     if (err) {
+//       console.error("Error reading build folder:", err);
+//     } else {
+//       console.log("Files inside buildPath:");
+//       // files.forEach(file => console.log(" -", file));
+//     }
+//   });
 
-  app.get(/.*/, (req, res) => {
-    res.sendFile(path.join(buildPath, "index.html"));
-  });
-}
+//   app.get(/.*/, (req, res) => {
+//     res.sendFile(path.join(buildPath, "index.html"));
+//   });
+// }
 
-
+app.get(/^(?!\/api).*/, (req, res) => {
+  res.sendFile(path.join(__dirname, "../awsFrontend/dist/index.html"));
+});
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
