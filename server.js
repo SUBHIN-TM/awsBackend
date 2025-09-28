@@ -9,7 +9,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// --- API ROUTES ---
+console.log("DB_USER =", process.env.DB_USER); console.log("DB_PASSWORD =", process.env.DB_PASSWORD);
 
 // Add new record
 app.post("/api/add", async (req, res) => {
