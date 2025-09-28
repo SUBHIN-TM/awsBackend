@@ -9,10 +9,12 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-console.log("DB_USER =", process.env.DB_USER); console.log("DB_PASSWORD =", process.env.DB_PASSWORD);
+// console.log("DB_USER =", process.env.DB_USER); console.log("DB_PASSWORD =", process.env.DB_PASSWORD);
 
 // Add new record
 app.post("/api/add", async (req, res) => {
+  console.log("req.body", req.body);
+  
   const { name, phone } = req.body;
   try {
     await db.query("INSERT INTO users (name, phone) VALUES (?, ?)", [name, phone]);
@@ -27,6 +29,7 @@ app.post("/api/add", async (req, res) => {
 // Get all records
 app.get("/api/list", async (req, res) => {
   try {
+    console.log("Fetching user list");
     const [rows] = await db.query("SELECT * FROM users");
     res.json(rows);
   } catch (err) {
@@ -40,14 +43,14 @@ if (process.env.MODE === "production") {
   const buildPath = path.join(__dirname, "../awsFrontend/dist");
   app.use(express.static(buildPath));
 
-  console.log("buildpath", buildPath);
+  // console.log("buildpath", buildPath);
 
   fs.readdir(buildPath, (err, files) => {
     if (err) {
       console.error("Error reading build folder:", err);
     } else {
       console.log("Files inside buildPath:");
-      files.forEach(file => console.log(" -", file));
+      // files.forEach(file => console.log(" -", file));
     }
   });
 
