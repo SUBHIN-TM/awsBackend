@@ -30,6 +30,7 @@ app.get("/api/list", async (req, res) => {
     const [rows] = await db.query("SELECT * FROM users");
     res.json(rows);
   } catch (err) {
+    console.log("err", err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
